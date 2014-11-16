@@ -13,19 +13,13 @@
 #define END_OF_WORD '$'
 #define MAX_WORD_SIZE 40
 
-/*
- * The data structure - Briandais trie - is represented as a multidimensional list, in other words
- * a list of lists recursively defined. The char letter argument could be easily? replaced
- * by a more generic one, such as void* data.
- */
+
 struct ListOfLists {
     char letter;
     struct ListOfLists* next_member;
     struct ListOfLists* sub_member;
 };
-/*
- * Some constructors and destructors
- */
+
 struct ListOfLists* create_empty_member(){
     struct ListOfLists* empty_trie = malloc(sizeof(struct ListOfLists));
     empty_trie->letter      = END_OF_WORD;
@@ -68,9 +62,6 @@ void destroy_briandais(struct ListOfLists* trie){
     free(trie);   
 }
 
-/*
- * Some basic functions, along with the getters and setters
- */
 bool is_empty_briandais(struct ListOfLists* trie){
     if (trie == NULL ||
         (trie != NULL
@@ -106,31 +97,35 @@ void set_sub_member(struct ListOfLists* current, struct ListOfLists* sub){
     }
 }
 
-//
-// by definition the empty word is contained even in any trie. This simplifies the case, when an empty word should be inserted
-bool is_word_contained_briandais(struct ListOfLists* trie, char* word){
+
+/* 
+ * by definition the empty word is contained in any trie, although the trie self should not start with a node
+ * containing this empty word. The assumption simplifies also the case, when an empty word should be inserted
+ */
+ bool is_word_contained_briandais(struct ListOfLists* trie, char* word){
     if (word[0] == '\0' || word[0] == END_OF_WORD) {
         return true;
     }
     for (int i=0; word[i] != '\0'; i++) {
-        //search from beging till the end of the trie-line. If the letter in word is greater the the current trie-line letter, then return false, as the letters are alphabetically ordered
-        //reached the end of trie-line and the letter not found
+        //reached the end of a list or sth is just wrong woth the trie
         if (is_empty_briandais(trie)) {
             return false;
         }
         while (!is_empty_briandais(trie)) {
+            //search from beging till the end of the trie-line. If the letter in word is greater the the current letter at a given level, then return false, as the letters are alphabetically ordered
             if (word[i] < trie->letter) {
                 return false;
             }
-            //letter matched, so continue to search in a deeper trie-line level
+            //letter matched, so continue to search in a deeper node level
             if (word[i] == trie->letter) {
                 trie = trie->sub_member;
                 break;
             }
+            //otherwise the letter in the word is greater than the current and the search continues at the same level
             trie = trie->next_member;
         }
     }
-    //word exhausted and symbol in trie marks the end
+    //word is exhausted so check if the current node marks an end of trie (NULL), an end of the word (END_OF_WORD) or it contains another letter
     if (trie == NULL) {
         return false;
     }
@@ -142,8 +137,13 @@ bool is_word_contained_briandais(struct ListOfLists* trie, char* word){
     }
 }
 
-//insertion in a non-empty trie - presuming that a trie of type (e,0,0) should be considered as a trie containing the empty word
-struct ListOfLists* insert_word_briandais(struct ListOfLists* trie, char* word){
+/*
+ * A trie of type (e,0,0) should be considered as a trie containing the empty word and thus the new word
+ * will be inserted after it (e,0, new_word). This could happen if one creates an empty trie and than inserts
+ * all other words. This should be changed if incorrect!
+ */
+ struct ListOfLists* insert_word_briandais(struct ListOfLists* trie, char* word){
+    //the very first words is being inserted
     if (trie == NULL) {
         if (word[0] == '\0') {
             return trie = create_empty_member();
@@ -165,7 +165,7 @@ struct ListOfLists* insert_word_briandais(struct ListOfLists* trie, char* word){
         end->next_member = trie;
         return end;
     }
-    //trie containing the empty word, so insert a new one and preserve this
+    //trie contains the empty word (normally should not occur, but if the trie is created as an empty one this case is inevitable
     if (is_empty_briandais(trie)) {
         trie->next_member = insert_word_briandais(trie->next_member, word);
         return trie;
@@ -181,6 +181,7 @@ struct ListOfLists* insert_word_briandais(struct ListOfLists* trie, char* word){
         return new_head;
     }
     struct ListOfLists* head = trie;
+     //previous node stores the "history" of a one node back in the list, so that the pointers could be swapped
     struct ListOfLists* previous = NULL;
     while (*word > trie->letter) {
         if (trie->next_member == NULL) {
@@ -201,6 +202,10 @@ struct ListOfLists* insert_word_briandais(struct ListOfLists* trie, char* word){
     }
 }
 
+/*
+ * slightly more complex algorithm, deploying a depth search techniques, removing the letters backwards
+ * and thus ensuring that only a sufix will be deleted if prefix of the word is a prefix of another one.
+ */
 struct ListOfLists* delete_word_briandais(struct ListOfLists* trie, char* word){
     if (word[0] == '\0' || is_empty_briandais(trie)) {
         return trie;
@@ -216,7 +221,7 @@ struct ListOfLists* delete_word_briandais(struct ListOfLists* trie, char* word){
     struct ListOfLists* one_back_on_the_stack = malloc(sizeof(struct ListOfLists));
     //indicates if a letter is part of list with others or is the only letter and thus the only branch and can be peacefully deleted
     for (int i=sp=0; word[i] != '\0'; i++,sp++) {
-        (stack_of_node_pointers[sp]) = malloc(2*sizeof(struct ListOfLists*)+sizeof(bool));
+        (stack_of_node_pointers[sp]) = malloc(sizeof(struct HistoryStack));
         (stack_of_node_pointers[sp])->previous_in_the_list = NULL;
         if (is_empty_briandais(trie)) {
             return head;
@@ -245,7 +250,7 @@ struct ListOfLists* delete_word_briandais(struct ListOfLists* trie, char* word){
         return head;
     }
     if (get_root_value(trie) == END_OF_WORD) {
-        (stack_of_node_pointers[sp]) = malloc(2*sizeof(struct ListOfLists*)+sizeof(bool));
+        (stack_of_node_pointers[sp]) = malloc(sizeof(struct HistoryStack));
         (stack_of_node_pointers[sp])->node = trie;
         (stack_of_node_pointers[sp])->previous_in_the_list = NULL;
         (stack_of_node_pointers[sp])->is_first_in_the_list = true;
@@ -266,8 +271,9 @@ struct ListOfLists* delete_word_briandais(struct ListOfLists* trie, char* word){
             free((stack_of_node_pointers[sp])->node);
             return head;
         }
+        //at the beginning of the list
         if ((stack_of_node_pointers[sp])->is_first_in_the_list) {
-            //the very first letter should be removed
+            //the very first letter of the trie should be removed
             if (sp == 0) {
                 free((stack_of_node_pointers[sp])->node);
                 return head->next_member;
@@ -315,7 +321,6 @@ int height(struct ListOfLists* trie){
     }
 }
 
-//TODO
 double mean_depth(struct ListOfLists* trie){
     int words_trie = word_count(trie);
     if (is_empty_briandais(trie)) {
@@ -374,17 +379,19 @@ struct ListOfLists* merge_briandais(struct ListOfLists* trie1, struct ListOfList
     return trie1;
 }
 
-//very complex algorithm...the idea is to simulate the depth search in the trie and to store the words in a list
-List ordered_list_briandais(struct ListOfLists* trie){
+/*
+ * once again, using depth search allows traversing the trie in a manner that the words found are
+ * alphabetically ordered
+ */
+ List ordered_list_briandais(struct ListOfLists* trie){
     if (is_empty_briandais(trie)) {
         return create_empty_list();
     }
     List list = NULL;
-    //kind of a buffer which stores the pointer to the current trie-node and by poping (sp--) the trie-nodes visited before, appear, so that one can branch in the next word
+    //a stack which stores the pointer to the current trie-node. Popping a word gives an access to the parent node and eventually branching in the next ordered word
     struct ListOfLists** stack_of_members = malloc(MAX_WORD_SIZE*sizeof(struct ListOfLists*));
-    //sp := stack pointer, pointing to the current node; decreasing means going back in history; increases when a new pointer to a node is being added
+    //sp - stack pointer, pointing to the current node; decreasing means going back in history; increases when a new pointer to a node is being added
     int sp = 0;
-    //word represents the trace in the trie, and when a END_WORD symbol is reached, it is attached to the list
     char* word = malloc(MAX_WORD_SIZE*sizeof(char));
     while (1) {
         while (get_root_value(trie) != END_OF_WORD) {

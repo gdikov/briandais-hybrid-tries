@@ -15,29 +15,29 @@
 #define MAX_LINE_LENGTH 50
 
 int main(int argc, const char * argv[]) {
-    Briandais trie = NULL;
+//    Briandais trie = NULL;
 //    Briandais trie2 = NULL;
     
 //    char* file_path = "Shakespeare/richardiii.txt";
-    char* file_path = "biginput.txt";
+//    char* file_path = "biginput.txt";
 //    char* file_path2 = "in90000.txt";
     
-    FILE* ifp = fopen(file_path, "r");
-    
-    if(!ifp){
-        perror("ERROR");
-    }
-    
-    char buffer[MAX_LINE_LENGTH];
+//    FILE* ifp = fopen(file_path, "r");
+//    
+//    if(!ifp){
+//        perror("ERROR");
+//    }
+//    
+//    char buffer[MAX_LINE_LENGTH];
     
 //    struct timeval tv1, tv2;
 //    gettimeofday(&tv1, NULL);
 //    
 //    long begin = tv1.tv_usec;
-    
-    while (fscanf(ifp, "%s", buffer) != EOF) {
-        trie = insert_word_briandais(trie, buffer);
-    }
+//    
+//    while (fscanf(ifp, "%s", buffer) != EOF) {
+//        trie = insert_word_briandais(trie, buffer);
+//    }
 //    fclose(ifp);
 //    
 //    memset(buffer, 0, MAX_LINE_LENGTH);
@@ -78,6 +78,8 @@ int main(int argc, const char * argv[]) {
 //    printf("NULL pointers: %d\n", null_pointers_count(trie));
 //
 //    printf("Height: %d\n", height(trie));
+    
+//    printf("Mean height: %f", mean_depth(trie));
 //
 //    char* user_input = malloc(40*sizeof(char));
 //    scanf("%s", user_input);
@@ -92,22 +94,14 @@ int main(int argc, const char * argv[]) {
     
 //    Briandais trie3 = merge_briandais(trie, trie2);
     
-    //seems like it works. not sure if it should...
-    
-    
+//    
+//    
 //    while (fscanf(ifp, "%s", buffer) != EOF) {
-//        if(!is_word_contained_briandais(trie, buffer)){
-//            printf("Missing word: %s\n", buffer);
-//        }
+//        delete_word_briandais(trie, buffer);
 //    }
-    
-    double mean_dep = mean_depth(trie);
-    
-    printf("Mean height: %f", mean_dep);
-    
-    destroy_briandais(trie);
-    fclose(ifp);
-//    fclose(ifp2);
+//    
+//    destroy_briandais(trie);
+//    fclose(ifp);
     
     return 0;
 }
