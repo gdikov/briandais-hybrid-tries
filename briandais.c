@@ -20,7 +20,7 @@ struct ListOfLists {
     struct ListOfLists* sub_member;
 };
 
-struct ListOfLists* create_empty_member(){
+struct ListOfLists* create_empty_node_braindais(){
     struct ListOfLists* empty_trie = malloc(sizeof(struct ListOfLists));
     empty_trie->letter      = END_OF_WORD;
     empty_trie->next_member = NULL;
@@ -28,12 +28,13 @@ struct ListOfLists* create_empty_member(){
     return empty_trie;
 }
 
+//O(1)
 struct ListOfLists* create_empty_briandais(){
-    struct ListOfLists* empty = create_empty_member();
+    struct ListOfLists* empty = create_empty_node_braindais();
     return empty;
 }
 
-struct ListOfLists* create_member(char letter){
+struct ListOfLists* create_node_braindais(char letter){
     struct ListOfLists* empty_trie = malloc(sizeof(struct ListOfLists));
     empty_trie->letter      = letter;
     empty_trie->next_member = NULL;
@@ -41,6 +42,7 @@ struct ListOfLists* create_member(char letter){
     return empty_trie;
 }
 
+//O(n), where n is the total number of nodes in the trie
 void destroy_briandais(struct ListOfLists* trie){
     if (trie->sub_member != NULL &&
         trie->next_member != NULL) {
@@ -62,6 +64,7 @@ void destroy_briandais(struct ListOfLists* trie){
     free(trie);   
 }
 
+//O(1)
 bool is_empty_briandais(struct ListOfLists* trie){
     if (trie == NULL ||
         (trie != NULL
@@ -85,6 +88,20 @@ void set_root_value(struct ListOfLists* trie, char value){
     }
 }
 
+struct ListOfLists* get_next_member(struct ListOfLists* current){
+    if (current != NULL) {
+        return current->next_member;
+    }
+    return NULL;
+}
+
+struct ListOfLists* get_sub_member(struct ListOfLists* current){
+    if (current != NULL) {
+        return current->sub_member;
+    }
+    return NULL;
+}
+
 void set_next_member(struct ListOfLists* current, struct ListOfLists* next){
     if (current != NULL) {
         current->next_member = next;
@@ -101,6 +118,7 @@ void set_sub_member(struct ListOfLists* current, struct ListOfLists* sub){
 /* 
  * by definition the empty word is contained in any trie, although the trie self should not start with a node
  * containing this empty word. The assumption simplifies also the case, when an empty word should be inserted
+ * Complexity: O(m) where m is the length of the looked-up word
  */
  bool is_word_contained_briandais(struct ListOfLists* trie, char* word){
     if (word[0] == '\0' || word[0] == END_OF_WORD) {
@@ -111,6 +129,7 @@ void set_sub_member(struct ListOfLists* current, struct ListOfLists* sub){
         if (is_empty_briandais(trie)) {
             return false;
         }
+        //this will be repeated maximum n times, where n is the number of distinct letters in the trie. Consider a case where they all occur in a same level. 
         while (!is_empty_briandais(trie)) {
             //search from beging till the end of the trie-line. If the letter in word is greater the the current letter at a given level, then return false, as the letters are alphabetically ordered
             if (word[i] < trie->letter) {
@@ -141,27 +160,28 @@ void set_sub_member(struct ListOfLists* current, struct ListOfLists* sub){
  * A trie of type (e,0,0) should be considered as a trie containing the empty word and thus the new word
  * will be inserted after it (e,0, new_word). This could happen if one creates an empty trie and than inserts
  * all other words. This should be changed if incorrect!
+ * Complexity: O(m) where m is the word length
  */
  struct ListOfLists* insert_word_briandais(struct ListOfLists* trie, char* word){
     //the very first words is being inserted
     if (trie == NULL) {
         if (word[0] == '\0') {
-            return trie = create_empty_member();
+            return trie = create_empty_node_braindais();
         }
-        trie = create_member(*word);
+        trie = create_node_braindais(*word);
         struct ListOfLists* head = trie;
         for (int i=1; word[i] != '\0'; i++) {
-            trie->sub_member = create_member(word[i]);
+            trie->sub_member = create_node_braindais(word[i]);
             trie = trie->sub_member;
         }
-        trie->sub_member = create_empty_member();
+        trie->sub_member = create_empty_node_braindais();
         return head;
     }
     if (*word == '\0') {
         if (get_root_value(trie) == END_OF_WORD) {
             return trie;
         }
-        struct ListOfLists* end = create_empty_member();
+        struct ListOfLists* end = create_empty_node_braindais();
         end->next_member = trie;
         return end;
     }
@@ -175,7 +195,7 @@ void set_sub_member(struct ListOfLists* current, struct ListOfLists* sub){
         return trie;
     }
     if (*word < trie->letter) {
-        struct ListOfLists* new_head = create_member(*word);
+        struct ListOfLists* new_head = create_node_braindais(*word);
         new_head->sub_member = insert_word_briandais(new_head->sub_member, ++word);
         new_head->next_member = trie;
         return new_head;
@@ -195,7 +215,7 @@ void set_sub_member(struct ListOfLists* current, struct ListOfLists* sub){
         trie->sub_member = insert_word_briandais(trie->sub_member, ++word);
         return head;
     }else{
-        previous->next_member = create_member(*word);
+        previous->next_member = create_node_braindais(*word);
         previous->next_member->next_member = trie;
         previous->next_member->sub_member = insert_word_briandais(previous->next_member->sub_member, ++word);
         return head;
@@ -205,6 +225,7 @@ void set_sub_member(struct ListOfLists* current, struct ListOfLists* sub){
 /*
  * slightly more complex algorithm, deploying a depth search techniques, removing the letters backwards
  * and thus ensuring that only a sufix will be deleted if prefix of the word is a prefix of another one.
+ * Complexity: O(2m) = O(m) where m is the word length
  */
 struct ListOfLists* delete_word_briandais(struct ListOfLists* trie, char* word){
     if (word[0] == '\0' || is_empty_briandais(trie)) {
@@ -292,52 +313,70 @@ struct ListOfLists* delete_word_briandais(struct ListOfLists* trie, char* word){
     return head;
 }
 
-int word_count(struct ListOfLists* trie){
+/* 
+ * Complexity: O(n) where n is the total number of nodes in the trie
+ */
+int word_count_briandais(struct ListOfLists* trie){
     if (trie == NULL) {
         return 0;
     }
     if (get_root_value(trie) == END_OF_WORD) {
-        return 1+(word_count(trie->next_member) + word_count(trie->sub_member));
+        return 1+(word_count_briandais(trie->next_member) + word_count_briandais(trie->sub_member));
     }
-    return (word_count(trie->next_member) + word_count(trie->sub_member));
+    return (word_count_briandais(trie->next_member) + word_count_briandais(trie->sub_member));
 }
 
-int null_pointers_count(struct ListOfLists* trie){
+/*
+ * Complexity: O(n) where n is the total number of nodes in the trie
+ */
+int null_pointers_count_briandais(struct ListOfLists* trie){
     if (trie == NULL) {
         return 1;
     }
-    return (null_pointers_count(trie->next_member) + null_pointers_count(trie->sub_member));
+    return (null_pointers_count_briandais(trie->next_member) + null_pointers_count_briandais(trie->sub_member));
 }
 
-int height(struct ListOfLists* trie){
+/*
+ * Complexity: O(n) where n is the total number of nodes in the trie
+ */
+int height_briandais(struct ListOfLists* trie){
     int max_height_next, max_height_sub = 0;
     if (is_empty_briandais(trie)) {
         return max_height_next = max_height_sub = 0;
     }
-    if ((max_height_next = height(trie->next_member)) > (max_height_sub = 1 + height(trie->sub_member))) {
+    if ((max_height_next = height_briandais(trie->next_member)) > (max_height_sub = 1 + height_briandais(trie->sub_member))) {
         return max_height_next;
     }else{
         return max_height_sub;
     }
 }
 
-double mean_depth(struct ListOfLists* trie){
-    int words_trie = word_count(trie);
+/*
+ * Assuming that the function won't be called often, the code was ment to be easily understandable. The worse time complexity is not such a bad compromise.
+ * Complexity: O(n^2) where n is the total number of nodes in the trie
+ */
+double mean_depth_briandais(struct ListOfLists* trie){
+//    int words_trie = word_count(trie);
     if (is_empty_briandais(trie)) {
         return 0.0;
     }
-    int words_next = word_count(trie->next_member);
-    int words_sub = word_count(trie->sub_member);
+    int words_next = word_count_briandais(trie->next_member);
+    int words_sub = word_count_briandais(trie->sub_member);
+    int words_trie = words_next + words_sub;
     double coefficient_next = words_next/(double)words_trie;
     double coefficient_sub = words_sub/(double)words_trie;
     
-    return coefficient_next*mean_depth(trie->next_member) + coefficient_sub*(1+mean_depth(trie->sub_member));
+    return coefficient_next*mean_depth_briandais(trie->next_member) + coefficient_sub*(1+mean_depth_briandais(trie->sub_member));
 }
 
-int prefix_count(struct ListOfLists* trie, char* prefix){
+
+/*
+ * Complexity; O(P) where P is the number of the prefixed words
+ */
+int prefix_count_briandais(struct ListOfLists* trie, char* prefix){
     //all words start with the empty word
     if (prefix[0] == '\0' || is_empty_briandais(trie)) {
-        return word_count(trie);
+        return word_count_briandais(trie);
     }
     int i = 0;
     for (i=0; prefix[i+1] != '\0'; ++i) {
@@ -357,12 +396,14 @@ int prefix_count(struct ListOfLists* trie, char* prefix){
     }
     while (trie != NULL) {
         if (prefix[i] == trie->letter) {
-            return word_count(trie->sub_member);
+            return word_count_briandais(trie->sub_member);
         }
         trie = trie->next_member;
     }
     return 0;
 }
+
+
 
 struct ListOfLists* merge_briandais(struct ListOfLists* trie1, struct ListOfLists* trie2){
     if (is_empty_briandais(trie1)) {

@@ -31,6 +31,9 @@ char get_root_value(Briandais);
 //sets the root value
 void set_root_value(Briandais, char);
 
+Briandais get_next_member(Briandais);
+Briandais get_sub_member(Briandais);
+
 //it will also return true if the word is the empty word!
 bool is_word_contained_briandais(Briandais, char*);
 
@@ -39,21 +42,21 @@ Briandais insert_word_briandais(Briandais, char*);
 Briandais delete_word_briandais(Briandais, char*);
 
 //returns the total number of words in the trie
-int word_count(Briandais);
+int word_count_briandais(Briandais);
 
 //returns the number of pointers to NULL
-int null_pointers_count(Briandais);
+int null_pointers_count_briandais(Briandais);
 
 //lists all the words in an alphabetically ordered list
 List ordered_list_briandais(Briandais);
 
 //returns the maximum height (depth) of the trie
-int height(Briandais);
+int height_briandais(Briandais);
 
 //returns the mean height (depth) of the trie
-double mean_depth(Briandais);
+double mean_depth_briandais(Briandais);
 
-int prefix_count(Briandais, char*);
+int prefix_count_briandais(Briandais, char*);
 
 Briandais merge_briandais(Briandais, Briandais);
 
