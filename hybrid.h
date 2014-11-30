@@ -16,7 +16,7 @@
 
 typedef struct TernaryTrie* Hybrid;
 
-Hybrid insert_word_hybrid(Hybrid, char*, int);
+Hybrid insert_word_hybrid(Hybrid, char*);
 
 Hybrid delete_word_hybrid(Hybrid, char*);
 
@@ -36,6 +36,6 @@ int prefix_count_hybrid(Hybrid, char*);
 
 Hybrid merge_hybrid(Hybrid, Hybrid);
 
-Briandais hybrid_to_briandais(Hybrid);
+//Briandais hybrid_to_briandais(Hybrid);
 
 #endif /* defined(__Dictionary__hybrid__) */

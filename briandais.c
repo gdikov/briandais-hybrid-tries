@@ -10,7 +10,7 @@
 #include <string.h>
 #include "briandais.h"
 
-#define END_OF_WORD '$'
+#define END_OF_WORD '\0'
 #define MAX_WORD_SIZE 40
 
 
@@ -356,13 +356,12 @@ int height_briandais(struct ListOfLists* trie){
  * Complexity: O(n^2) where n is the total number of nodes in the trie
  */
 double mean_depth_briandais(struct ListOfLists* trie){
-//    int words_trie = word_count(trie);
+    int words_trie = word_count_briandais(trie);
     if (is_empty_briandais(trie)) {
         return 0.0;
     }
     int words_next = word_count_briandais(trie->next_member);
     int words_sub = word_count_briandais(trie->sub_member);
-    int words_trie = words_next + words_sub;
     double coefficient_next = words_next/(double)words_trie;
     double coefficient_sub = words_sub/(double)words_trie;
     
@@ -414,8 +413,8 @@ struct ListOfLists* merge_briandais(struct ListOfLists* trie1, struct ListOfList
     }
     List words_in_trie2 = ordered_list_briandais(trie2);
     while (!is_empty_list(words_in_trie2)) {
-        trie1 = insert_word_briandais(trie1, get_word(words_in_trie2));
-        words_in_trie2 = get_next(words_in_trie2);
+        trie1 = insert_word_briandais(trie1, get_word_list(words_in_trie2));
+        words_in_trie2 = get_next_list(words_in_trie2);
     }
     return trie1;
 }
@@ -430,37 +429,38 @@ struct ListOfLists* merge_briandais(struct ListOfLists* trie1, struct ListOfList
     }
     List list = NULL;
     //a stack which stores the pointer to the current trie-node. Popping a word gives an access to the parent node and eventually branching in the next ordered word
-    struct ListOfLists** stack_of_members = malloc(MAX_WORD_SIZE*sizeof(struct ListOfLists*));
+    struct ListOfLists** stack_of_nodes = malloc(MAX_WORD_SIZE*sizeof(struct ListOfLists*));
     //sp - stack pointer, pointing to the current node; decreasing means going back in history; increases when a new pointer to a node is being added
     int sp = 0;
     char* word = malloc(MAX_WORD_SIZE*sizeof(char));
     while (1) {
         while (get_root_value(trie) != END_OF_WORD) {
-            stack_of_members[sp] = trie;
+            stack_of_nodes[sp] = trie;
             word[sp] = trie->letter;
             trie = trie->sub_member;
             sp++;
         }
         if (trie->letter == END_OF_WORD && trie->next_member != NULL) {
-            stack_of_members[sp] = trie;
+            stack_of_nodes[sp] = trie;
         }
         //substitute with "complex_insert_word_list(list, word)" if you want an order in wich the word length matters, i.e. a < z < aa < zz < aaa....
         list = simple_insert_word_list(list, word);
         if (is_empty_briandais(trie)) {
             sp--;
         }
-        for(;(trie = stack_of_members[sp])->next_member == NULL; sp--){
+        for(;(trie = stack_of_nodes[sp])->next_member == NULL; sp--){
             word[sp] = '\0';
             if (sp == 0) {
+                free(word);
+                free(stack_of_nodes);
                 return list;
             }
         }
-        if ((trie = stack_of_members[sp])->next_member != NULL) {
+        if ((trie = stack_of_nodes[sp])->next_member != NULL) {
             word[sp] = '\0';
             trie = trie->next_member;
         }
     }
-    return list;
 }
 
 

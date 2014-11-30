@@ -60,7 +60,7 @@ int prefix_count_briandais(Briandais, char*);
 
 Briandais merge_briandais(Briandais, Briandais);
 
-Hybrid briandais_to_hybrid(Briandais);
+//Hybrid briandais_to_hybrid(Briandais);
 
 
 #endif /* defined(__Dictionary__briandais__) */

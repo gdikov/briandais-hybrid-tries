@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "list.h"
 
 struct ListOfWords{
@@ -17,7 +18,7 @@ struct ListOfWords{
 };
 
 struct ListOfWords* create_non_empty_list(char* word){
-    int len = (int)strlen(word);
+    int len = (int)strlen(word) + 1;
     struct ListOfWords* list = malloc(sizeof(struct ListOfWords));
     list->word = malloc(len*sizeof(char));
     memset(list->word, 0, len);
@@ -35,22 +36,35 @@ struct ListOfWords* create_empty_list(){
     return list;
 }
 
-char* get_word(struct ListOfWords* list){
+char* get_word_list(struct ListOfWords* list){
     if (list != NULL) {
         return list->word;
     }
     return NULL;
 }
 
-void set_word(struct ListOfWords* list, char* word){
-    if (list != NULL) {
-        strcpy(list->word, word);
-    }
-}
-
-struct ListOfWords* get_next(struct ListOfWords* list){
+struct ListOfWords* get_next_list(struct ListOfWords* list){
     if (list != NULL) {
         return list->next;
+    }
+    return NULL;
+}
+
+struct ListOfWords* set_next_list(struct ListOfWords* list, struct ListOfWords* next){
+    if (list != NULL) {
+        list->next = next;
+        return list;
+    }
+    return NULL;
+}
+
+struct ListOfWords* set_word_list(struct ListOfWords* list, char* word){
+    if (list != NULL) {
+        if (list->word == NULL) {
+            list->word = malloc((strlen(word)+1)*sizeof(char));
+        }
+        strcpy(list->word, word);
+        return list;
     }
     return NULL;
 }
@@ -150,4 +164,33 @@ struct ListOfWords* simple_insert_word_list(List list, char* new_word){
     list->next = new_member;
     return head;
 }
+
+struct ListOfWords* concat_list(struct ListOfWords* list_1, struct ListOfWords* list_2){
+    struct ListOfWords* head = list_1;
+    if (list_1 == NULL) {
+        return list_2;
+    }
+    while (list_1->next != NULL) {
+        list_1 = list_1->next;
+    }
+    list_1->next = list_2;
+    return head;
+}
+
+void print_list(struct ListOfWords* list){
+    while (list->next != NULL) {
+        printf("%s, ",list->word);
+        list = list->next;
+    }
+    printf("%s\n", list->word);
+    
+}
+
+
+
+
+
+
+
+
 
