@@ -277,11 +277,54 @@ int prefix_count_hybrid(struct TernaryTrie* trie, char* prefix){
 }
 
 struct TernaryTrie* merge_hybrid(struct TernaryTrie* trie1, struct TernaryTrie* trie2){
-    return NULL;
+    if (is_empty_hybrid(trie1)) {
+        return trie2;
+    }
+    if (is_empty_hybrid(trie2)) {
+        return trie1;
+    }
+    int wt1 = word_count_hybrid(trie1);
+    int wt2 = word_count_hybrid(trie2);
+    if (wt1 <= wt2) {
+        List list1 = ordered_list_hybrid(trie1);
+        while (list1 != NULL) {
+            trie2 = insert_word_hybrid(trie2, get_word_list(list1));
+            list1 = get_next_list(list1);
+        }
+        return trie2;
+    }else{
+        List list2 = ordered_list_hybrid(trie2);
+        while (list2 != NULL) {
+            trie1 = insert_word_hybrid(trie1, get_word_list(list2));
+            list2 = get_next_list(list2);
+        }
+        return trie1;
+    }
 }
 
 struct TernaryTrie* delete_word_hybrid(struct TernaryTrie* trie, char* word){
-    return NULL;
+    if (word[0] == '\0' &&
+        get_value_hybrid(trie) >= 0) {
+        trie->value = -1;
+        return trie;
+    }
+    if (is_empty_hybrid(trie)) {
+        return trie;
+    }
+    if (word[0] == trie->letter) {
+        if (word[1] == '\0'){
+            if (trie->value >= 0) {
+                trie->value = -1;
+                return trie;
+            }
+            return trie;
+        }
+        return delete_word_hybrid(trie->eq, ++word);
+    }
+    if (word[0] > trie->letter) {
+        return delete_word_hybrid(trie->sup, word);
+    }
+    return delete_word_hybrid(trie->inf, word);
 }
 
 

@@ -16,9 +16,11 @@
 #define MAX_LINE_LENGTH 50
 
 int main(int argc, const char * argv[]) {
+
+    
     Briandais trie_b = NULL;
     Hybrid trie_h = NULL;
-    char* file_path = "biginputUn.txt";
+    char* file_path = "input.txt";
     
     FILE* ifp = fopen(file_path, "r");
     
@@ -27,34 +29,42 @@ int main(int argc, const char * argv[]) {
     }
     
     char buffer[MAX_LINE_LENGTH];
-//
-//    struct timeval tv1, tv2;
-//    gettimeofday(&tv1, NULL);
 //    
-//    long begin = tv1.tv_usec;
+//    while (fscanf(ifp, "%s", buffer) != EOF) {
+//        trie_b = insert_word_briandais(trie_b, buffer);
+//    }
 //
+
     
-    while (fscanf(ifp, "%s", buffer) != EOF) {
-        trie_b = insert_word_briandais(trie_b, buffer);
-    }
+//    if (is_word_contained_briandais(trie_b, "wonderfully")) {
+//        puts("y");
+//    }else{
+//        puts("n");
+//    }
     
-    rewind(ifp);
-    
+//    rewind(ifp);
+//
+
+//    
     while (fscanf(ifp, "%s", buffer) != EOF) {
         trie_h = insert_word_hybrid(trie_h, buffer);
     }
     
+//    struct timeval tv1, tv2;
+//    gettimeofday(&tv1, NULL);
+//    long long begin = tv1.tv_usec;
 //
 //    memset(buffer, 0, MAX_LINE_LENGTH);
-//    
+//
 //    FILE* ifp2 = fopen(file_path2, "r");
 //    
 //    if(!ifp2){
 //        perror("ERROR");
 //    }
-//    while (fscanf(ifp2, "%s", buffer) != EOF) {
-//        trie = delete_word_briandais(trie, buffer);
-//    }
+    rewind(ifp);
+    while (fscanf(ifp, "%s", buffer) != EOF) {
+        trie_h = delete_word_hybrid(trie_h, buffer);
+    }
 //    fclose(ifp2);
 //    rewind(ifp);
 //
@@ -72,19 +82,19 @@ int main(int argc, const char * argv[]) {
 //
 //
 //    rewind(ifp);
-//    char* test_input = malloc(40*sizeof(char));
+    char* test_input = malloc(40*sizeof(char));
 //    while (fscanf(ifp, "%s", test_input) != EOF) {
 //        if (!is_word_contained_briandais(trie_b, test_input)) {
 //            printf("Badly constructed trie Briandais!!: %s\n", test_input);
 //        }
 //    }
 //
-//    rewind(ifp);
-//    while (fscanf(ifp, "%s", test_input) != EOF) {
-//        if (!is_word_contained_hybrid(trie_h, test_input)) {
-//            printf("Badly constructed trie Hybrid!!: %s\n", test_input);
-//        }
-//    }
+    rewind(ifp);
+    while (fscanf(ifp, "%s", test_input) != EOF) {
+        if (!is_word_contained_hybrid(trie_h, test_input)) {
+            printf("Badly constructed trie Hybrid!!: %s\n", test_input);
+        }
+    }
     
 
 //    printf("Word count Briandais: %d\n", word_count_briandais(trie_b));
@@ -92,32 +102,32 @@ int main(int argc, const char * argv[]) {
 //
 //    printf("NULL pointers Briandais: %d\n", null_pointers_count_briandais(trie_b));
 //    printf("NULL pointers Hybrid: %d\n", null_pointers_count_hybrid(trie_h));
-//    
+//
 //    printf("Height Briandais: %d\n", height_briandais(trie_b));
 //    printf("Height Hybrid: %d\n", height_hybrid(trie_h));
-//    
+//
 //    printf("Mean height Briandais: %f\n", mean_depth_briandais(trie_b));
 //    printf("Mean height Hybrid: %f\n", mean_depth_hybrid(trie_h));
 
 //    char* user_input = malloc(40*sizeof(char));
 //    scanf("%s", user_input);
-//    printf("Prefix of Briandais: %d\n", prefix_count_hybrid(trie_h, user_input));
-//    printf("Prefix of Hybrid: %d\n", prefix_count_briandais(trie_b, user_input));
+//    printf("Prefix of Hybrid: %d\n", prefix_count_hybrid(trie_h, "wond"));
+//    printf("Prefix of Briandais: %d\n", prefix_count_briandais(trie_b, "wond"));
 //    printf("%s\n", is_word_contained_briandais(trie_b, "10")? "yep" : "nope");
-    List list_b = ordered_list_briandais(trie_b);
-    List list_h = ordered_list_hybrid(trie_h);
-    
-    List head = list_b;
-
-    
-    rewind(ifp);
-    list_b = head;
-    char* test_input = malloc(40*sizeof(char));
-    while (fscanf(ifp, "%s", test_input) != EOF) {
-        if (!is_word_contained_list(list_b, test_input)) {
-            printf("Missing word: %s\n", test_input);
-        }
-    }
+//    List list_b = ordered_list_briandais(trie_b);
+//    List list_h = ordered_list_hybrid(trie_h);
+//
+//    List head = list_b;
+//
+//    
+//    rewind(ifp);
+//    list_b = head;
+//    char* test_input = malloc(40*sizeof(char));
+//    while (fscanf(ifp, "%s", test_input) != EOF) {
+//        if (!is_word_contained_list(list_b, test_input)) {
+//            printf("Missing word: %s\n", test_input);
+//        }
+//    }
     
     
 //    while (list_b != NULL) {
@@ -143,9 +153,8 @@ int main(int argc, const char * argv[]) {
 //    print_list(list);
 //
 //    gettimeofday(&tv2, NULL);
-//    long end = tv2.tv_usec;
-//    
-//    printf("Running time: %ld ms\n", (end-begin)/1000);
+//    long long end = tv2.tv_usec;
+//    printf("Running time: %lld us\n", (end-begin));
     
 //    Briandais trie3 = merge_briandais(trie, trie2);
     
@@ -155,7 +164,8 @@ int main(int argc, const char * argv[]) {
 //        delete_word_briandais(trie, buffer);
 //    }
 //    
-//    destroy_briandais(trie);
+//    destroy_briandais(trie_b);
+
     fclose(ifp);
     
     return 0;
