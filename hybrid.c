@@ -327,6 +327,22 @@ struct TernaryTrie* delete_word_hybrid(struct TernaryTrie* trie, char* word){
     return delete_word_hybrid(trie->inf, word);
 }
 
+Briandais hybrid_to_briandais(struct TernaryTrie* trie){
+    if (trie == NULL) {
+        return NULL;
+    }
+    if (is_empty_hybrid(trie)) {
+        return create_empty_briandais();
+    }
+    List listed_trie = ordered_list_hybrid(trie);
+    Briandais transformed_trie = NULL;
+    while (listed_trie != NULL) {
+        insert_word_briandais(transformed_trie, get_word_list(listed_trie));
+        listed_trie = get_next_list(listed_trie);
+    }
+    return transformed_trie;
+}
+
 
 
 
