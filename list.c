@@ -185,12 +185,3 @@ void print_list(struct ListOfWords* list){
     printf("%s\n", list->word);
     
 }
-
-
-
-
-
-
-
-
-

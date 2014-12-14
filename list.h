@@ -13,7 +13,7 @@
 
 typedef struct ListOfWords* List;
 
-//with self ordering
+//sorting of type a, b, c, ..., z, aa, ab, ..., zz, aaa ...
 List complex_insert_word_list(List, char*);
 
 List simple_insert_word_list(List, char*);

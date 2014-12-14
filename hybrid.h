@@ -16,6 +16,8 @@
 
 typedef struct TernaryTrie* Hybrid;
 
+Hybrid create_empty_hybrid();
+
 Hybrid insert_word_hybrid(Hybrid, char*);
 
 Hybrid delete_word_hybrid(Hybrid, char*);

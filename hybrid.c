@@ -342,8 +342,3 @@ Briandais hybrid_to_briandais(struct TernaryTrie* trie){
     }
     return transformed_trie;
 }
-
-
-
-
-

@@ -66,10 +66,12 @@ void destroy_briandais(struct ListOfLists* trie){
 
 //O(1)
 bool is_empty_briandais(struct ListOfLists* trie){
-    if (trie == NULL ||
-        (trie != NULL
+    if (trie == NULL){
+        return true;
+    }
+    if (trie != NULL
         && trie->letter == END_OF_WORD
-        && trie->next_member == NULL)) {
+        && trie->next_member == NULL) {
         return true;
     }
     return false;
@@ -377,27 +379,28 @@ int prefix_count_briandais(struct ListOfLists* trie, char* prefix){
     if (prefix[0] == '\0' || is_empty_briandais(trie)) {
         return word_count_briandais(trie);
     }
-    int i = 0;
-    for (i=0; prefix[i+1] != '\0'; ++i) {
-        if (is_empty_briandais(trie)) {
+    struct ListOfLists* twin_ptr = trie;
+    int i;
+    for (i = 0; prefix[i+1] != '\0'; ++i) {
+        if (is_empty_briandais(twin_ptr)) {
             return 0;
         }
-        while (!is_empty_briandais(trie)) {
-            if (prefix[i] < trie->letter){
+        while (!is_empty_briandais(twin_ptr)) {
+            if (prefix[i] < twin_ptr->letter){
                 return 0;
             }
-            if (prefix[i] == trie->letter) {
-                trie = trie->sub_member;
+            if (prefix[i] == twin_ptr->letter) {
+                twin_ptr = twin_ptr->sub_member;
                 break;
             }
-            trie = trie->next_member;
+            twin_ptr = twin_ptr->next_member;
         }
     }
-    while (trie != NULL) {
-        if (prefix[i] == trie->letter) {
-            return word_count_briandais(trie->sub_member);
+    while (twin_ptr != NULL) {
+        if (prefix[i] == twin_ptr->letter) {
+            return word_count_briandais(twin_ptr->sub_member);
         }
-        trie = trie->next_member;
+        twin_ptr = twin_ptr->next_member;
     }
     return 0;
 }
@@ -463,7 +466,21 @@ struct ListOfLists* merge_briandais(struct ListOfLists* trie1, struct ListOfList
     }
 }
 
-
+Hybrid briandais_to_hybrid(struct ListOfLists* trie){
+    if (trie == NULL) {
+        return NULL;
+    }
+    if (is_empty_briandais(trie)) {
+        return create_empty_hybrid();
+    }
+    List listed_trie = ordered_list_briandais(trie);
+    Hybrid transformed_trie = NULL;
+    while (listed_trie != NULL) {
+        insert_word_hybrid(transformed_trie, get_word_list(listed_trie));
+        listed_trie = get_next_list(listed_trie);
+    }
+    return transformed_trie;
+}
 
 
 
